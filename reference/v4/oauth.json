@@ -1,0 +1,338 @@
+{
+  "/oauth/apps": {
+    "get": {
+      "description": "Get a page of OAuth 2.0 client applications registered with Mattermost.\n##### Permissions\nWith `manage_oauth` permission, the apps registered by the logged in user are returned. With `manage_system_wide_oauth` permission, all apps regardless of creator are returned.\n",
+      "parameters": [
+        {
+          "default": "0",
+          "description": "The page to select.",
+          "in": "query",
+          "name": "page",
+          "type": "string"
+        },
+        {
+          "default": "60",
+          "description": "The number of apps per page.",
+          "in": "query",
+          "name": "per_page",
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OAuthApp list retrieval successful",
+          "schema": {
+            "items": {
+              "$ref": "#/definitions/OAuthApp"
+            },
+            "type": "array"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "501": {
+          "$ref": "#/responses/NotImplemented"
+        }
+      },
+      "summary": "Get OAuth apps",
+      "tags": [
+        "OAuth"
+      ]
+    },
+    "post": {
+      "description": "Register an OAuth 2.0 client application with Mattermost as the service provider.\n##### Permissions\nMust have `manage_oauth` permission.\n",
+      "parameters": [
+        {
+          "description": "OAuth application to register",
+          "in": "body",
+          "name": "body",
+          "required": true,
+          "schema": {
+            "properties": {
+              "callback_urls": {
+                "description": "A list of callback URLs for the appliation",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "description": {
+                "description": "A short description of the application",
+                "type": "string"
+              },
+              "homepage": {
+                "description": "A link to the website of the application",
+                "type": "string"
+              },
+              "icon_url": {
+                "description": "A URL to an icon to display with the application",
+                "type": "string"
+              },
+              "is_trusted": {
+                "description": "Set this to `true` to skip asking users for permission",
+                "type": "boolean"
+              },
+              "name": {
+                "description": "The name of the client application",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "display_name",
+              "description",
+              "callback_urls",
+              "homepage"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "responses": {
+        "201": {
+          "description": "App registration successful",
+          "schema": {
+            "$ref": "#/definitions/OAuthApp"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "501": {
+          "$ref": "#/responses/NotImplemented"
+        }
+      },
+      "summary": "Register OAuth app",
+      "tags": [
+        "OAuth"
+      ]
+    }
+  },
+  "/oauth/apps/{app_id}": {
+    "delete": {
+      "description": "Delete and unregister an OAuth 2.0 client application \n##### Permissions\nIf app creator, must have `mange_oauth` permission otherwise `manage_system_wide_oauth` permission is required.\n",
+      "parameters": [
+        {
+          "description": "Application client id",
+          "in": "path",
+          "name": "app_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "App deletion successful",
+          "schema": {
+            "$ref": "#/definitions/StatusOK"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        },
+        "501": {
+          "$ref": "#/responses/NotImplemented"
+        }
+      },
+      "summary": "Delete an OAuth app",
+      "tags": [
+        "OAuth"
+      ]
+    },
+    "get": {
+      "description": "Get an OAuth 2.0 client application registered with Mattermost.\n##### Permissions\nIf app creator, must have `mange_oauth` permission otherwise `manage_system_wide_oauth` permission is required.\n",
+      "parameters": [
+        {
+          "description": "Application client id",
+          "in": "path",
+          "name": "app_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "App retrieval successful",
+          "schema": {
+            "$ref": "#/definitions/OAuthApp"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        },
+        "501": {
+          "$ref": "#/responses/NotImplemented"
+        }
+      },
+      "summary": "Get an OAuth app",
+      "tags": [
+        "OAuth"
+      ]
+    }
+  },
+  "/oauth/apps/{app_id}/info": {
+    "get": {
+      "description": "Get public information about an OAuth 2.0 client application registered with Mattermost. The application's client secret will be blanked out.\n##### Permissions\nMust be authenticated.\n",
+      "parameters": [
+        {
+          "description": "Application client id",
+          "in": "path",
+          "name": "app_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "App retrieval successful",
+          "schema": {
+            "$ref": "#/definitions/OAuthApp"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        },
+        "501": {
+          "$ref": "#/responses/NotImplemented"
+        }
+      },
+      "summary": "Get info on an OAuth app",
+      "tags": [
+        "OAuth"
+      ]
+    }
+  },
+  "/oauth/apps/{app_id}/regen_secret": {
+    "post": {
+      "description": "Regenerate the client secret for an OAuth 2.0 client application registered with Mattermost.\n##### Permissions\nIf app creator, must have `mange_oauth` permission otherwise `manage_system_wide_oauth` permission is required.\n",
+      "parameters": [
+        {
+          "description": "Application client id",
+          "in": "path",
+          "name": "app_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Secret regeneration successful",
+          "schema": {
+            "$ref": "#/definitions/OAuthApp"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        },
+        "501": {
+          "$ref": "#/responses/NotImplemented"
+        }
+      },
+      "summary": "Regenerate OAuth app secret",
+      "tags": [
+        "OAuth"
+      ]
+    }
+  },
+  "/users/{user_id}/oauth/apps/authorized": {
+    "get": {
+      "description": "Get a page of OAuth 2.0 client applications authorized to access a user's account.\n##### Permissions\nMust be authenticated as the user or have `edit_other_users` permission.\n",
+      "parameters": [
+        {
+          "description": "User GUID",
+          "in": "path",
+          "name": "user_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "default": "0",
+          "description": "The page to select.",
+          "in": "query",
+          "name": "page",
+          "type": "string"
+        },
+        {
+          "default": "60",
+          "description": "The number of apps per page.",
+          "in": "query",
+          "name": "per_page",
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "OAuthApp list retrieval successful",
+          "schema": {
+            "items": {
+              "$ref": "#/definitions/OAuthApp"
+            },
+            "type": "array"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "501": {
+          "$ref": "#/responses/NotImplemented"
+        }
+      },
+      "summary": "Get authorized OAuth apps",
+      "tags": [
+        "OAuth"
+      ]
+    }
+  }
+}

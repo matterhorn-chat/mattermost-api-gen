@@ -1,0 +1,1111 @@
+{
+  "/teams": {
+    "get": {
+      "description": "For regular users only returns open teams. Users with the \"manage_system\" permission will return teams regardless of type. The result is based on query string parameters - page and per_page.\n##### Permissions\nMust be authenticated. \"manage_system\" permission is required to show all teams. \n",
+      "parameters": [
+        {
+          "default": "0",
+          "description": "The page to select.",
+          "in": "query",
+          "name": "page",
+          "type": "string"
+        },
+        {
+          "default": "60",
+          "description": "The number of teams per page.",
+          "in": "query",
+          "name": "per_page",
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Team list retrieval successful",
+          "schema": {
+            "items": {
+              "$ref": "#/definitions/Team"
+            },
+            "type": "array"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        }
+      },
+      "summary": "Get teams.",
+      "tags": [
+        "teams"
+      ]
+    },
+    "post": {
+      "description": "Create a new team on the system.\n##### Permissions\nMust be authenticated and have the `create_team` permission.\n",
+      "parameters": [
+        {
+          "description": "Team that is to be created",
+          "in": "body",
+          "name": "body",
+          "required": true,
+          "schema": {
+            "properties": {
+              "display_name": {
+                "description": "Non-unique UI name for the team",
+                "type": "string"
+              },
+              "name": {
+                "description": "Unique handler for a team, will be present in the team URL",
+                "type": "string"
+              },
+              "type": {
+                "description": "`'O'` for open, `'I'` for invite only",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "display_name",
+              "type"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "responses": {
+        "201": {
+          "description": "Team creation successful",
+          "schema": {
+            "$ref": "#/definitions/Team"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Create a team",
+      "tags": [
+        "teams"
+      ]
+    }
+  },
+  "/teams/name/{name}": {
+    "get": {
+      "description": "Get a team based on provided name string\n##### Permissions\nMust be authenticated, team type is open and have the `view_team` permission.\n",
+      "parameters": [
+        {
+          "description": "Team Name",
+          "in": "path",
+          "name": "name",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "201": {
+          "description": "Team retrieval successful",
+          "schema": {
+            "$ref": "#/definitions/Team"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        }
+      },
+      "summary": "Get a team by name",
+      "tags": [
+        "teams"
+      ]
+    }
+  },
+  "/teams/name/{name}/exists": {
+    "get": {
+      "description": "Check if the team exists based on a team name.\n",
+      "parameters": [
+        {
+          "description": "Team Name",
+          "in": "path",
+          "name": "name",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "201": {
+          "description": "Team retrieval successful",
+          "schema": {
+            "$ref": "#/definitions/TeamExists"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        }
+      },
+      "summary": "Check if team exists",
+      "tags": [
+        "teams"
+      ]
+    }
+  },
+  "/teams/search": {
+    "post": {
+      "description": "Search teams based on search term provided in the request body.\n##### Permissions\nLogged in user only shows open teams\nLogged in user with \"manage_system\" permission shows all teams\n",
+      "parameters": [
+        {
+          "description": "Search criteria",
+          "in": "body",
+          "name": "body",
+          "required": true,
+          "schema": {
+            "properties": {
+              "term": {
+                "description": "The search term to match against the name or display name of teams",
+                "type": "string"
+              }
+            },
+            "required": [
+              "term"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "responses": {
+        "201": {
+          "description": "Teams search successful",
+          "schema": {
+            "items": {
+              "$ref": "#/definitions/Team"
+            },
+            "type": "array"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        }
+      },
+      "summary": "Search teams",
+      "tags": [
+        "teams"
+      ]
+    }
+  },
+  "/teams/{team_id}": {
+    "delete": {
+      "description": "Delete a team softly and put in archived only.\n##### Permissions\nMust have the `manage_team` permission.\n",
+      "parameters": [
+        {
+          "description": "Team GUID",
+          "in": "path",
+          "name": "team_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "201": {
+          "description": "Team deletion successful",
+          "schema": {
+            "$ref": "#/definitions/StatusOK"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        }
+      },
+      "summary": "Delete a team",
+      "tags": [
+        "teams"
+      ]
+    },
+    "get": {
+      "description": "Get a team on the system.\n##### Permissions\nMust be authenticated and have the `view_team` permission.\n",
+      "parameters": [
+        {
+          "description": "Team GUID",
+          "in": "path",
+          "name": "team_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "201": {
+          "description": "Team retrieval successful",
+          "schema": {
+            "$ref": "#/definitions/Team"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        }
+      },
+      "summary": "Get a team",
+      "tags": [
+        "teams"
+      ]
+    },
+    "put": {
+      "description": "Update a team by providing the team object. The fields that can be updated are defined in the request body, all other provided fields will be ignored.\n##### Permissions\nMust have the `manage_team` permission.\n",
+      "parameters": [
+        {
+          "description": "Team GUID",
+          "in": "path",
+          "name": "team_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "Team to update",
+          "in": "body",
+          "name": "body",
+          "required": true,
+          "schema": {
+            "properties": {
+              "allow_open_invite": {
+                "type": "string"
+              },
+              "allowed_domains": {
+                "type": "string"
+              },
+              "company_name": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "display_name": {
+                "type": "string"
+              },
+              "invite_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "display_name",
+              "description",
+              "company_name",
+              "allowed_domains",
+              "invite_id",
+              "allow_open_invite"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Team update successful",
+          "schema": {
+            "$ref": "#/definitions/Team"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        }
+      },
+      "summary": "Update a team",
+      "tags": [
+        "teams"
+      ]
+    }
+  },
+  "/teams/{team_id}/import": {
+    "post": {
+      "consumes": [
+        "multipart/form-data"
+      ],
+      "description": "Import a team into a existing team. Import users, channels, posts, hooks.\n##### Permissions\nMust have `permission_import_team` permission.\n",
+      "parameters": [
+        {
+          "description": "A file to be uploaded in zip format.",
+          "in": "formData",
+          "name": "file",
+          "required": true,
+          "type": "file"
+        },
+        {
+          "description": "The size of the zip file to be imported.",
+          "in": "formData",
+          "name": "filesize",
+          "required": true,
+          "type": "integer"
+        },
+        {
+          "allowEmptyValue": false,
+          "description": "String that defines from which application the team was exported to be imported into Mattermost.",
+          "in": "formData",
+          "name": "importFrom",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "Team GUID",
+          "in": "path",
+          "name": "team_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "File attached with the results of the import",
+          "schema": {
+            "type": "file"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Import a Team from other application",
+      "tags": [
+        "teams"
+      ]
+    }
+  },
+  "/teams/{team_id}/invite/email": {
+    "post": {
+      "description": "Invite users to the existing team usign the user's email.\n##### Permissions\nMust have `invite_to_team` permission for the team.\n",
+      "parameters": [
+        {
+          "description": "Team GUID",
+          "in": "path",
+          "name": "team_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "List of user's email",
+          "in": "body",
+          "name": "body",
+          "required": true,
+          "schema": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Users invite successful",
+          "schema": {
+            "$ref": "#/definitions/StatusOK"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Invite users to the team by email",
+      "tags": [
+        "teams"
+      ]
+    }
+  },
+  "/teams/{team_id}/members": {
+    "get": {
+      "description": "Get a page team members list based on query string parameters - team id, page and per page.\n##### Permissions\nMust be authenticated and have the `view_team` permission.\n",
+      "parameters": [
+        {
+          "description": "Team GUID",
+          "in": "path",
+          "name": "team_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "default": "0",
+          "description": "The page to select.",
+          "in": "query",
+          "name": "page",
+          "type": "string"
+        },
+        {
+          "default": "60",
+          "description": "The number of users per page.",
+          "in": "query",
+          "name": "per_page",
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Team members retrieval successful",
+          "schema": {
+            "items": {
+              "$ref": "#/definitions/TeamMember"
+            },
+            "type": "array"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        }
+      },
+      "summary": "Get team members",
+      "tags": [
+        "teams"
+      ]
+    },
+    "post": {
+      "description": "Add user to the team by user_id, valid hash & data, or valid invite_id.\n##### Permissions\nMust be authenticated. For adding other user, authenticated user must have the `add_user_to_team` permission.\n",
+      "parameters": [
+        {
+          "description": "Team GUID",
+          "in": "path",
+          "name": "team_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "in": "body",
+          "name": "body",
+          "required": true,
+          "schema": {
+            "$ref": "#/definitions/TeamMember"
+          }
+        },
+        {
+          "description": "Hash value with time, team id and and InviteSaltId",
+          "in": "query",
+          "name": "hash",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "description": "Data with time and team id",
+          "in": "query",
+          "name": "data",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "description": "Invite id to add user to the team",
+          "in": "query",
+          "name": "invite_id",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "201": {
+          "description": "Team member creation successful",
+          "schema": {
+            "$ref": "#/definitions/TeamMember"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        }
+      },
+      "summary": "Add user to team",
+      "tags": [
+        "teams"
+      ]
+    }
+  },
+  "/teams/{team_id}/members/batch": {
+    "post": {
+      "description": "Add a number of users to the team by user_id.\n##### Permissions\nMust be authenticated. Authenticated user must have the `add_user_to_team` permission.\n",
+      "parameters": [
+        {
+          "description": "Team GUID",
+          "in": "path",
+          "name": "team_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "in": "body",
+          "name": "body",
+          "required": true,
+          "schema": {
+            "items": {
+              "$ref": "#/definitions/TeamMember"
+            },
+            "type": "array"
+          }
+        }
+      ],
+      "responses": {
+        "201": {
+          "description": "Team members created successfully.",
+          "schema": {
+            "items": {
+              "$ref": "#/definitions/TeamMember"
+            },
+            "type": "array"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        }
+      },
+      "summary": "Add multiple users to team",
+      "tags": [
+        "teams"
+      ]
+    }
+  },
+  "/teams/{team_id}/members/ids": {
+    "post": {
+      "description": "Get a list of team members based on a provided array of user ids.\n##### Permissions\nMust have `view_team` permission for the team.\n",
+      "parameters": [
+        {
+          "description": "Team GUID",
+          "in": "path",
+          "name": "team_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "List of user ids",
+          "in": "body",
+          "name": "body",
+          "required": true,
+          "schema": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Team members retrieval successful",
+          "schema": {
+            "items": {
+              "$ref": "#/definitions/TeamMember"
+            },
+            "type": "array"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Get team members by ids",
+      "tags": [
+        "teams"
+      ]
+    }
+  },
+  "/teams/{team_id}/members/{user_id}": {
+    "delete": {
+      "description": "Delete the team member object for a user, effectively removing them from a team.\n##### Permissions\nMust be logged in as the user or have the `remove_user_from_team` permission.\n",
+      "parameters": [
+        {
+          "description": "Team GUID",
+          "in": "path",
+          "name": "team_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "User GUID",
+          "in": "path",
+          "name": "user_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Team member deletion successful",
+          "schema": {
+            "$ref": "#/definitions/StatusOK"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        }
+      },
+      "summary": "Remove user from team",
+      "tags": [
+        "teams"
+      ]
+    },
+    "get": {
+      "description": "Get a team member on the system.\n##### Permissions\nMust be authenticated and have the `view_team` permission.\n",
+      "parameters": [
+        {
+          "description": "Team GUID",
+          "in": "path",
+          "name": "team_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "User GUID",
+          "in": "path",
+          "name": "user_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "201": {
+          "description": "Team member retrieval successful",
+          "schema": {
+            "$ref": "#/definitions/TeamMember"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        }
+      },
+      "summary": "Get a team member",
+      "tags": [
+        "teams"
+      ]
+    }
+  },
+  "/teams/{team_id}/members/{user_id}/roles": {
+    "get": {
+      "description": "Update a team member roles. Valid team roles are \"team_user\", \"team_admin\" or both of them. Overwrites any previously assigned team roles.\n##### Permissions\nMust be authenticated and have the `manage_team_roles` permission.\n",
+      "parameters": [
+        {
+          "description": "Team GUID",
+          "in": "path",
+          "name": "team_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "User GUID",
+          "in": "path",
+          "name": "user_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "Space-delimited team roles to assign to the user",
+          "in": "body",
+          "name": "body",
+          "required": true,
+          "schema": {
+            "properties": {
+              "roles": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "roles"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Team member roles update successful",
+          "schema": {
+            "$ref": "#/definitions/StatusOK"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        }
+      },
+      "summary": "Update a team member roles",
+      "tags": [
+        "teams"
+      ]
+    }
+  },
+  "/teams/{team_id}/patch": {
+    "put": {
+      "description": "Partially update a team by providing only the fields you want to update. Omitted fields will not be updated. The fields that can be updated are defined in the request body, all other provided fields will be ignored.\n##### Permissions\nMust have the `manage_team` permission.\n",
+      "parameters": [
+        {
+          "description": "Team GUID",
+          "in": "path",
+          "name": "team_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "Team object that is to be updated",
+          "in": "body",
+          "name": "body",
+          "required": true,
+          "schema": {
+            "properties": {
+              "allow_open_invite": {
+                "type": "boolean"
+              },
+              "company_name": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "display_name": {
+                "type": "string"
+              },
+              "invite_id": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "team patch successful",
+          "schema": {
+            "$ref": "#/definitions/Team"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Patch a team",
+      "tags": [
+        "teams"
+      ]
+    }
+  },
+  "/teams/{team_id}/stats": {
+    "get": {
+      "description": "Get a team stats on the system.\n##### Permissions\nMust be authenticated and have the `view_team` permission.\n",
+      "parameters": [
+        {
+          "description": "Team GUID",
+          "in": "path",
+          "name": "team_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "201": {
+          "description": "Team stats retrieval successful",
+          "schema": {
+            "$ref": "#/definitions/TeamStats"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        }
+      },
+      "summary": "Get a team stats",
+      "tags": [
+        "teams"
+      ]
+    }
+  },
+  "/users/{user_id}/teams": {
+    "get": {
+      "description": "Get a list of teams that a user is on.\n##### Permissions\nMust be authenticated as the user or have the `manage_system` permission.\n",
+      "parameters": [
+        {
+          "description": "User GUID",
+          "in": "path",
+          "name": "user_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "201": {
+          "description": "Team list retrieval successful",
+          "schema": {
+            "$ref": "#/definitions/Team"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Get a user's teams",
+      "tags": [
+        "teams"
+      ]
+    }
+  },
+  "/users/{user_id}/teams/members": {
+    "get": {
+      "description": "Get a list of team members for a user. Useful for getting the ids of teams the user is on and the roles they have in those teams.\n##### Permissions\nMust be logged in as the user or have the `edit_other_users` permission.\n",
+      "parameters": [
+        {
+          "description": "User GUID",
+          "in": "path",
+          "name": "user_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Team members retrieval successful",
+          "schema": {
+            "items": {
+              "$ref": "#/definitions/TeamMember"
+            },
+            "type": "array"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        }
+      },
+      "summary": "Get team members for a user",
+      "tags": [
+        "teams"
+      ]
+    }
+  },
+  "/users/{user_id}/teams/unread": {
+    "get": {
+      "description": "Get the count for unread messages and mentions in the teams the user is a member of.\n##### Permissions\nMust be logged in.\n",
+      "parameters": [
+        {
+          "description": "User GUID",
+          "in": "path",
+          "name": "user_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "Optional team id to be excluded from the results",
+          "in": "query",
+          "name": "exclude_team",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Team unreads retrieval successful",
+          "schema": {
+            "items": {
+              "$ref": "#/definitions/TeamUnread"
+            },
+            "type": "array"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Get team unreads for a user",
+      "tags": [
+        "teams"
+      ]
+    }
+  },
+  "/users/{user_id}/teams/{team_id}/unread": {
+    "get": {
+      "description": "Get the unread mention and message counts for a team for the specified user.\n##### Permissions\nMust be the user or have `edit_other_users` permission and have `view_team` permission for the team.\n",
+      "parameters": [
+        {
+          "description": "User GUID",
+          "in": "path",
+          "name": "user_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "Team GUID",
+          "in": "path",
+          "name": "team_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Team unread count retrieval successful",
+          "schema": {
+            "$ref": "#/definitions/TeamUnread"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        }
+      },
+      "summary": "Get unreads for a team",
+      "tags": [
+        "teams"
+      ]
+    }
+  }
+}

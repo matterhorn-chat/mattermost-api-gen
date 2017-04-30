@@ -1,0 +1,25 @@
+{
+  "/cluster/status": {
+    "get": {
+      "description": "Get a set of information for each node in the cluster, useful for checking the status and health of each node.\n##### Permissions\nMust have `manage_system` permission.\n",
+      "responses": {
+        "200": {
+          "description": "Cluster status retrieval successful",
+          "schema": {
+            "items": {
+              "$ref": "#/definitions/ClusterInfo"
+            },
+            "type": "array"
+          }
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Get cluster status",
+      "tags": [
+        "cluster"
+      ]
+    }
+  }
+}

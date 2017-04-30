@@ -1,0 +1,194 @@
+{
+  "basePath": "/api/v4",
+  "consumes": [
+    "application/json"
+  ],
+  "host": "your-mattermost-url.com",
+  "info": {
+    "contact": {
+      "email": "feedback@mattermost.com"
+    },
+    "description": "**Mattermost API version 4 is an active and in-progress project. We're looking for contributors to code server endpoints, build drivers and write documentation. If you're interested [please join our Mattermost instance](https://pre-release.mattermost.com/signup_user_complete/?id=f1924a8db44ff3bb41c96424cdc20676) and join the [APIv4 channel](https://pre-release.mattermost.com/core/channels/apiv4).**\n",
+    "termsOfService": "https://about.mattermost.com/default-terms/",
+    "title": "Mattermost API Reference",
+    "version": "4.0.0",
+    "x-logo": {
+      "backgroundColor": "#FFFFFF",
+      "url": "https://www.mattermost.org/wp-content/uploads/2016/03/logoHorizontal_WS.png"
+    }
+  },
+  "paths": null,
+  "produces": [
+    "application/json"
+  ],
+  "responses": {
+    "BadRequest": {
+      "description": "Invalid or missing parameters in URL or request body",
+      "schema": {
+        "$ref": "#/definitions/AppError"
+      }
+    },
+    "Forbidden": {
+      "description": "Do not have appropriate permissions",
+      "schema": {
+        "$ref": "#/definitions/AppError"
+      }
+    },
+    "InternalServerError": {
+      "description": "Something went wrong with the server",
+      "schema": {
+        "$ref": "#/definitions/AppError"
+      }
+    },
+    "NotFound": {
+      "description": "Resource not found",
+      "schema": {
+        "$ref": "#/definitions/AppError"
+      }
+    },
+    "NotImplemented": {
+      "description": "Feature is disabled",
+      "schema": {
+        "$ref": "#/definitions/AppError"
+      }
+    },
+    "TooLarge": {
+      "description": "Content too large",
+      "schema": {
+        "$ref": "#/definitions/AppError"
+      }
+    },
+    "Unauthorized": {
+      "description": "No access token provided",
+      "schema": {
+        "$ref": "#/definitions/AppError"
+      }
+    }
+  },
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "swagger": "2.0",
+  "tags": [
+    {
+      "description": "The Mattermost Web Services API is used by Mattermost clients and third party applications to interact with the server. [JavaScript and Golang drivers for](/#tag/drivers) connecting to the APIs are also available.\n\n### Support\n\nMattermost core committers work with the community to keep the API documentation up-to-date.\n\nIf you have questions on API routes not listed in this reference, please [join the Mattermost community server](https://pre-release.mattermost.com/signup_user_complete/?id=f1924a8db44ff3bb41c96424cdc20676) to ask questions in the Developers channel, [or post questions to our Developer Discussion forum](http://forum.mattermost.org/c/dev).\n\n[Bug reports](https://github.com/mattermost/mattermost-api-reference/issues) in the documentation or the API are also welcome, as are pull requests to fix the issues.\n\n### Contributing\n\nWhen you have answers to API questions not addressed in our documentation we ask you to consider making a pull request to improve our reference. [Small changes](https://github.com/mattermost/mattermost-api-reference/commit/d574c0c1e95dc2228dc96663afd562f1305e3ece) and [larger changes](https://github.com/mattermost/mattermost-api-reference/commit/1ae3314f0935eebba8c885d8969dcad72f801501) are all welcome.\n\nWe also have [Help Wanted tickets](https://github.com/mattermost/mattermost-api-reference/issues) available for community members who would like to help others more easily use the APIs. We acknowledge everyone's contribution in the [release notes of our next version](https://docs.mattermost.com/administration/changelog.html#contributors).\n\nThe source code for this API reference is hosted at https://github.com/mattermost/mattermost-api-reference.\n",
+      "name": "introduction"
+    },
+    {
+      "description": "All API access is through HTTP(S) requests at `your-mattermost-url.com/api/v4`. All request and response bodies are `application/json`.\n\nWhen using endpoints that require a user id, the string `me` can be used in place of the user id to indicate the action is to be taken for the logged in user.\n",
+      "name": "schema"
+    },
+    {
+      "description": "The easiest way to interact with the Mattermost Web Service API is through a language specific driver. These can be found at the following links:\n\n* Mattermost JavaScript Driver (not built yet)\n* [Mattermost Golang Driver](https://github.com/mattermost/platform/blob/master/model/client4.go)\n",
+      "name": "drivers"
+    },
+    {
+      "description": "The majority of the Mattermost API involves interacting with teams. Therefore, most API methods require authentication as a user. There are two ways to authenticate into a Mattermost system.\n\nAll examples assume there is a Mattermost instance running at http://localhost:8065.\n\n#### Session Token\n\nMake an HTTP POST to `your-mattermost-url.com/api/v4/users/login` with a JSON body indicating the name of the team, the user\u2019s `login_id`, `password` and optionally the MFA `token`. The `login_id` can be an email, username or an AD/LDAP ID depending on the system's configuration.\n\n```\ncurl -i -d '{\"login_id\":\"someone@nowhere.com\",\"password\":\"thisisabadpassword\"}' http://localhost:8065/api/v4/users/login\n```\n\nIf successful, the response will contain a `Token` header and a user object in the body.\n\n```\nHTTP/1.1 200 OK\nSet-Cookie: MMSID=hyr5dmb1mbb49c44qmx4whniso; Path=/; Max-Age=2592000; HttpOnly\nToken: hyr5dmb1mbb49c44qmx4whniso\nX-Ratelimit-Limit: 10\nX-Ratelimit-Remaining: 9\nX-Ratelimit-Reset: 1\nX-Request-Id: smda55ckcfy89b6tia58shk5fh\nX-Version-Id: developer\nDate: Fri, 11 Sep 2015 13:21:14 GMT\nContent-Length: 657\nContent-Type: application/json; charset=utf-8\n\n{{user object as json}}\n```\n\nInclude the `Token` as part of the `Authorization` header on your future API requests with the `Bearer` method.\n\n```\ncurl -i -H 'Authorization: Bearer hyr5dmb1mbb49c44qmx4whniso' http://localhost:8065/api/v4/users/me\n```\n\nYou should now be able to access the API as the user you logged in as.\n\n#### OAuth 2.0\n\nMattermost has the ability to act as an [OAuth 2.0](https://tools.ietf.org/html/rfc6749) service provider.\n\nThe official documentation for [using your Mattermot server as an OAuth 2.0 service provider can be found here.](https://docs.mattermost.com/developer/oauth-2-0-applications.html)\n\nFor an example on how to register an OAuth 2.0 app with your Mattermost instance, please see the [Mattermost-Zapier integration documentation](https://docs.mattermost.com/integrations/zapier.html#register-zapier-as-an-oauth-2-0-application).\n",
+      "name": "authentication"
+    },
+    {
+      "description": "All errors will return an appropriate HTTP response code along with the following JSON body:\n```\n{\n    \"id\": \"the.error.id\",\n    \"message\": \"Something went wrong\", // the reason for the error\n    \"request_id\": \"\", // the ID of the request\n    \"status_code\": 0, // the HTTP status code\n    \"is_oauth\": false // whether the error is OAuth specific\n}\n```\n",
+      "name": "errors"
+    },
+    {
+      "description": "Whenever you make an HTTP request to the Mattermost API you might notice the following headers included in the response:\n```\nX-Ratelimit-Limit: 10\nX-Ratelimit-Remaining: 9\nX-Ratelimit-Reset: 1441983590\n```\n\nThese headers are telling you your current rate limit status.\n\n| Header | Description |\n| ------ | ----------- |\n| X-Ratelimit-Limit | The maximum number of requests you can make per second. |\n| X-Ratelimit-Remaining | The number of requests remaining in the current window. |\n| X-Ratelimit-Reset | The remaining UTC epoch seconds before the rate limit resets. |\n\nIf you exceed your rate limit for a window you will receive the following error in the body of the response:\n\n```\nHTTP/1.1 429 Too Many Requests\nDate: Tue, 10 Sep 2015 11:20:28 GMT\nX-RateLimit-Limit: 10\nX-RateLimit-Remaining: 0\nX-RateLimit-Reset: 1\n\nlimit exceeded\n```\n",
+      "name": "rate limiting"
+    },
+    {
+      "description": "In addition to the HTTP RESTful web service, Mattermost also offers a WebSocket event delivery system and some API functionality.\n\nTo connect to the WebSocket follow the standard opening handshake as [defined by the RFC specification](https://tools.ietf.org/html/rfc6455#section-1.3) to the `/api/v4/websocket` endpoint of Mattermost.\n\n#### Authentication\n\nThe Mattermost WebSocket can be authenticated by cookie or through an authentication challenge. If you're authenticating from a browser and have logged in with the Mattermost API, your authentication cookie should already be set, this is how the Mattermost webapp authenticates with the WebSocket.\n\nTo authenticate with an authentication challenge, first connect the WebSocket and then send the following JSON over the connection:\n\n```\n{\n  \"seq\": 1,\n  \"action\": \"authentication_challenge\",\n  \"data\": {\n    \"token\": \"mattermosttokengoeshere\"\n  }\n}\n```\n\nIf successful, you will receive a standard OK response from the webhook:\n\n```\n{\n  \"status\": \"OK\",\n  \"seq_reply\": 1\n}\n```\n\nOnce successfully authenticated, the server will pass a `hello` WebSocket event containing server version over the connection.\n\n#### Events\n\nWebSocket events are primarily used to alert the client to changes in Mattermost, such as delivering new posts or alerting the client that another user is typing in a channel.\n\nEvents on the WebSocket will have the form:\n\n```\n{\n  \"event\": \"hello\",\n  \"data\": {\n    \"server_version\": \"3.6.0.1451.1c38da627ebb4e3635677db6939e9195\"\n  },\n  \"broadcast\":{\n    \"omit_users\": null,\n    \"user_id\": \"ay5sq51sebfh58ktrce5ijtcwy\",\n    \"channel_id\": \"\",\n    \"team_id\": \"\"\n  }\n}\n```\n\nThe `event` field indicates the event type, `data` contains any data relevant to the event and `broadcast` contains information about who the event was sent to. For example, the above example has `user_id` set to \"ay5sq51sebfh58ktrce5ijtcwy\" meaning that only the user with that ID received this event broadcast. The `omit_users` field can contain an array of user IDs that were specifically omitted from receiving the event.\n\nThe list of Mattermost WebSocket events are:\n- typing\n- posted\n- post_edited\n- post_deleted\n- channel_created\n- channel_deleted\n- direct_added\n- new_user\n- leave_team\n- user_added\n- user_updated\n- user_removed\n- preference_changed\n- ephemeral_message\n- status_change\n- hello\n- webrtc\n\n#### WebSocket API\n\nMattermost has some basic support for WebSocket APIs. A connected WebSocket can make requests by sending the following over the connection:\n\n```\n{\n  \"action\": \"user_typing\",\n  \"seq\": 2,\n  \"data\": {\n    \"channel_id\": \"nhze199c4j87ped4wannrjdt9c\",\n    \"parent_id\": \"\"\n  }\n}\n```\n\nThis is an example of making a `user_typing` request, with the purpose of alerting the server that the connected client has begun typing in a channel or thread. The `action` field indicates what is being requested, and performs a similar duty as the route in a HTTP API.\n\nThe `seq` or sequence number is set by the client and should be incremented with every use. It is used to distinguish responses to requests that come down the WebSocket. For example, a standard response to the above request would be:\n\n```\n{\n  \"status\": \"OK\",\n  \"seq_reply\": 2\n}\n```\n\nNotice `seq_reply` is 2, matching the `seq` of the original request. Using this a client can distinguish which request the response is meant for.\n\nIf there was any information to respond with, it would be encapsulated in a `data` field.\n\nIn the case of an error, the response would be:\n\n```\n{\n  \"status\": \"FAIL\",\n  \"seq_reply\": 2,\n  \"error\": {\n    \"id\": \"some.error.id.here\",\n    \"message\": \"Some error message here\"\n  }\n}\n```\n\nThe list of WebSocket API actions is:\n- user_typing\n- get_statuses\n- get_statuses_by_ids\n\nTo see how these actions work, please refer to either the [Golang WebSocket driver](https://github.com/mattermost/platform/blob/master/model/websocket_client.go) or our [JavaScript WebSocket driver](https://github.com/mattermost/mattermost-driver-javascript/blob/master/websocket_client.jsx).\n",
+      "name": "WebSocket"
+    },
+    {
+      "description": "Endpoints for creating, getting and interacting with users.\n\nWhen using endpoints that require a user id, the string `me` can be used in place of the user id to indicate the action is to be taken for the logged in user.\n",
+      "name": "users"
+    },
+    {
+      "description": "Endpoints for creating, getting and interacting with teams.",
+      "name": "teams"
+    },
+    {
+      "description": "Endpoints for creating, getting and interacting with channels.",
+      "name": "channels"
+    },
+    {
+      "description": "Endpoints for creating, getting and interacting with posts.",
+      "name": "posts"
+    },
+    {
+      "description": "Endpoints for uploading and interacting with files.",
+      "name": "files"
+    },
+    {
+      "description": "Endpoints for saving and modifying user preferences.",
+      "name": "preferences"
+    },
+    {
+      "description": "Endpoints for creating, getting and downloading compliance reports.",
+      "name": "compliance"
+    },
+    {
+      "description": "Endpoints for configuring and interacting with high availability clusters.",
+      "name": "cluster"
+    },
+    {
+      "description": "Endpoints related to custom branding and white-labeling. See [our branding documentation](https://docs.mattermost.com/administration/branding.html) for more information.",
+      "name": "brand"
+    },
+    {
+      "description": "Endpoints for configuring and interacting with SAML.",
+      "name": "SAML"
+    },
+    {
+      "description": "Endpoints for configuring and interacting with LDAP.",
+      "name": "LDAP"
+    },
+    {
+      "description": "General endpoints for interating with the server, such as configuration and logging.",
+      "name": "system"
+    },
+    {
+      "description": "Endpoints for configuring and interacting with Mattermost as an OAuth 2.0 service provider.",
+      "name": "OAuth"
+    }
+  ],
+  "x-tagGroups": [
+    {
+      "name": "Introduction",
+      "tags": [
+        "introduction",
+        "schema"
+      ]
+    },
+    {
+      "name": "Standard Features",
+      "tags": [
+        "drivers",
+        "authentication",
+        "errors",
+        "rate limiting",
+        "WebSocket"
+      ]
+    },
+    {
+      "name": "Endpoints",
+      "tags": [
+        "users",
+        "teams",
+        "channels",
+        "posts",
+        "files",
+        "preferences",
+        "webhooks",
+        "commands",
+        "system",
+        "compliance",
+        "cluster",
+        "brand",
+        "OAuth",
+        "SAML",
+        "LDAP"
+      ]
+    }
+  ]
+}

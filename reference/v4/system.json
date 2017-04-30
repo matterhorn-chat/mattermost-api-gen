@@ -1,0 +1,385 @@
+{
+  "/audits": {
+    "get": {
+      "description": "Get a page of audits for all users on the system, selected with `page` and `per_page` query parameters.\n##### Permissions\nMust have `manage_system` permission.\n",
+      "parameters": [
+        {
+          "default": "0",
+          "description": "The page to select.",
+          "in": "query",
+          "name": "page",
+          "type": "string"
+        },
+        {
+          "default": "60",
+          "description": "The number of audits per page.",
+          "in": "query",
+          "name": "per_page",
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Audits retrieval successful",
+          "schema": {
+            "items": {
+              "$ref": "#/definitions/Audit"
+            },
+            "type": "array"
+          }
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Get audits",
+      "tags": [
+        "system"
+      ]
+    }
+  },
+  "/caches/invalidate": {
+    "post": {
+      "description": "Purge all the in-memory caches for the Mattermost server. This can have a temporary negative effect on performance while the caches are re-populated.\n##### Permissions\nMust have `manage_system` permission.\n",
+      "responses": {
+        "200": {
+          "description": "Caches invalidate successful",
+          "schema": {
+            "$ref": "#/definitions/StatusOK"
+          }
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Invalidate all the caches",
+      "tags": [
+        "system"
+      ]
+    }
+  },
+  "/config": {
+    "get": {
+      "description": "Retrieve the current server configuration\n##### Permissions\nMust have `manage_system` permission.\n",
+      "responses": {
+        "200": {
+          "description": "Configuration retrieval successful",
+          "schema": {
+            "$ref": "#/definitions/Config"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Get configuration",
+      "tags": [
+        "system"
+      ]
+    },
+    "put": {
+      "description": "Submit a new configuration for the server to use.\n##### Permissions\nMust have `manage_system` permission.\n",
+      "responses": {
+        "200": {
+          "description": "Configuration update successful",
+          "schema": {
+            "$ref": "#/definitions/Config"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Update configuration",
+      "tags": [
+        "system"
+      ]
+    }
+  },
+  "/config/client": {
+    "get": {
+      "description": "Get a subset of the server configuration needed by the client.\n##### Permissions\nNo permission required.\n",
+      "parameters": [
+        {
+          "description": "Must be `old`, other formats not implemented yet",
+          "in": "query",
+          "name": "format",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Configuration retrieval successful"
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "501": {
+          "$ref": "#/responses/NotImplemented"
+        }
+      },
+      "summary": "Get client configuration",
+      "tags": [
+        "system"
+      ]
+    }
+  },
+  "/config/reload": {
+    "post": {
+      "description": "Reload the configuration file to pick up on any changes made to it.\n##### Permissions\nMust have `manage_system` permission.\n",
+      "responses": {
+        "200": {
+          "description": "Configuration reload successful",
+          "schema": {
+            "$ref": "#/definitions/StatusOK"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Reload configuration",
+      "tags": [
+        "system"
+      ]
+    }
+  },
+  "/database/recycle": {
+    "post": {
+      "description": "Recycle database connections by closing and reconnecting all connections to master and read replica databases.\n##### Permissions\nMust have `manage_system` permission.\n",
+      "responses": {
+        "200": {
+          "description": "Database recycle successful",
+          "schema": {
+            "$ref": "#/definitions/StatusOK"
+          }
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Recycle database connections",
+      "tags": [
+        "system"
+      ]
+    }
+  },
+  "/email/test": {
+    "post": {
+      "description": "Send a test email to make sure you have your email settings configured correctly.\n##### Permissions\nMust have `manage_system` permission.\n",
+      "responses": {
+        "200": {
+          "description": "Email successful sent",
+          "schema": {
+            "$ref": "#/definitions/StatusOK"
+          }
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "500": {
+          "$ref": "#/responses/InternalServerError"
+        }
+      },
+      "summary": "Send a test email",
+      "tags": [
+        "system"
+      ]
+    }
+  },
+  "/license/client": {
+    "get": {
+      "description": "Get a subset of the server license needed by the client.\n##### Permissions\nNo permission required but having the `manage_system` permission returns more information.\n",
+      "parameters": [
+        {
+          "description": "Must be `old`, other formats not implemented yet",
+          "in": "query",
+          "name": "format",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "License retrieval successful"
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "501": {
+          "$ref": "#/responses/NotImplemented"
+        }
+      },
+      "summary": "Get client license",
+      "tags": [
+        "system"
+      ]
+    }
+  },
+  "/logs": {
+    "get": {
+      "description": "Get a page of server logs, selected with `page` and `per_page` query parameters.\n##### Permissions\nMust have `manage_system` permission.\n",
+      "parameters": [
+        {
+          "default": "0",
+          "description": "The page to select.",
+          "in": "query",
+          "name": "page",
+          "type": "string"
+        },
+        {
+          "default": "60",
+          "description": "The number of logs per page.",
+          "in": "query",
+          "name": "per_page",
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Logs retrieval successful",
+          "schema": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Get logs",
+      "tags": [
+        "system"
+      ]
+    },
+    "post": {
+      "description": "Add log messages to the server logs.\n##### Permissions\nMust have `manage_system` permission or if `ServiceSettings.EnableDeveloper` in the\nconfig file is set to `true` then any user can use this endpoint.\n",
+      "parameters": [
+        {
+          "in": "body",
+          "name": "body",
+          "required": true,
+          "schema": {
+            "properties": {
+              "level": {
+                "description": "The error level, e.g. ERROR or INFO",
+                "type": "string"
+              },
+              "message": {
+                "description": "Message to send to the server logs",
+                "type": "string"
+              }
+            },
+            "required": [
+              "level",
+              "message"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Logs sent successful",
+          "schema": {
+            "items": {
+              "type": "string"
+            },
+            "type": "object"
+          }
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Add log message",
+      "tags": [
+        "system"
+      ]
+    }
+  },
+  "/system/ping": {
+    "get": {
+      "description": "Receive a simple ping response.\n##### Permissions\nNo permissions required.\n",
+      "responses": {
+        "200": {
+          "description": "Ping successful",
+          "schema": {
+            "$ref": "#/definitions/StatusOK"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        }
+      },
+      "summary": "Ping the Server",
+      "tags": [
+        "system"
+      ]
+    }
+  },
+  "/webrtc/token": {
+    "get": {
+      "description": "Get a valid WebRTC token, STUN and TURN server URLs along with TURN credentials to use with the Mattermost WebRTC service. See https://docs.mattermost.com/administration/config-settings.html#webrtc-beta for WebRTC configutation settings. The token returned is for the current user's session.\n##### Permissions\nMust be authenticated.\n",
+      "responses": {
+        "200": {
+          "description": "WebRTC Token retrieval successful",
+          "schema": {
+            "properties": {
+              "gateway_url": {
+                "description": "The URL to the gateway server",
+                "type": "string"
+              },
+              "stun_uri": {
+                "description": "The URI to the STUN server",
+                "type": "string"
+              },
+              "token": {
+                "description": "The WebRTC token",
+                "type": "string"
+              },
+              "turn_password": {
+                "description": "The password to use with the TURN server",
+                "type": "string"
+              },
+              "turn_uri": {
+                "description": "The URI to the TURN server",
+                "type": "string"
+              },
+              "turn_username": {
+                "description": "The username to use with the TURN server",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "501": {
+          "$ref": "#/responses/NotImplemented"
+        }
+      },
+      "summary": "Get WebRTC token",
+      "tags": [
+        "system"
+      ]
+    }
+  }
+}

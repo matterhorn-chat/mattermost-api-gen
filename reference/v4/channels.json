@@ -1,0 +1,1208 @@
+{
+  "/channels": {
+    "post": {
+      "description": "Create a new channel.\n##### Permissions\nIf creating a public channel, `create_public_channel` permission is required. If creating a private channel, `create_private_channel` permission is required.\n",
+      "parameters": [
+        {
+          "description": "Channel object to be created",
+          "in": "body",
+          "name": "body",
+          "required": true,
+          "schema": {
+            "properties": {
+              "display_name": {
+                "description": "The non-unique UI name for the channel",
+                "type": "string"
+              },
+              "header": {
+                "description": "Markdown-formatted text to display in the header of the channel",
+                "type": "string"
+              },
+              "name": {
+                "description": "The unique handle for the channel, will be present in the channel URL",
+                "type": "string"
+              },
+              "purpose": {
+                "description": "A short description of the purpose of the channel",
+                "type": "string"
+              },
+              "team_id": {
+                "description": "The team ID of the team to create the channel on",
+                "type": "string"
+              },
+              "type": {
+                "description": "'O' for a public channel, 'P' for a private channel",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "display_name",
+              "type",
+              "team_id"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "responses": {
+        "201": {
+          "description": "Channel creation successful",
+          "schema": {
+            "$ref": "#/definitions/Channel"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Create a channel",
+      "tags": [
+        "channels"
+      ]
+    }
+  },
+  "/channels/direct": {
+    "post": {
+      "description": "Create a new direct message channel between two users.\n##### Permissions\nMust be one of the two users and have `create_direct_channel` permission. Having the `manage_system` permission voids the previous requirements.\n",
+      "parameters": [
+        {
+          "description": "The two user ids to be in the direct message",
+          "in": "body",
+          "name": "body",
+          "required": true,
+          "schema": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        }
+      ],
+      "responses": {
+        "201": {
+          "description": "Direct channel creation successful",
+          "schema": {
+            "$ref": "#/definitions/Channel"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Create a direct message channel",
+      "tags": [
+        "channels"
+      ]
+    }
+  },
+  "/channels/group": {
+    "post": {
+      "description": "Create a new group message channel to group of users. If the logged in user's id is not included in the list, it will be appended to the end.\n##### Permissions\nMust have `create_group_channel` permission.\n",
+      "parameters": [
+        {
+          "description": "User ids to be in the group message channel",
+          "in": "body",
+          "name": "body",
+          "required": true,
+          "schema": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        }
+      ],
+      "responses": {
+        "201": {
+          "description": "Group channel creation successful",
+          "schema": {
+            "$ref": "#/definitions/Channel"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Create a group message channel",
+      "tags": [
+        "channels"
+      ]
+    }
+  },
+  "/channels/members/{user_id}/view": {
+    "post": {
+      "description": "Perform all the actions involved in viewing a channel. This includes marking channels as read, clearing push notifications, and updating the active channel.\n##### Permissions\nMust be logged in as user or have `edit_other_users` permission.\n",
+      "parameters": [
+        {
+          "description": "User ID to perform the view action for",
+          "in": "path",
+          "name": "user_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "Paremeters affecting how and which channels to view",
+          "in": "body",
+          "name": "body",
+          "required": true,
+          "schema": {
+            "properties": {
+              "channel_id": {
+                "description": "The channel ID that is being viewed. Use a blank string to indicate that all channels have lost focus.",
+                "type": "string"
+              },
+              "prev_channel_id": {
+                "description": "The channel ID of the previous channel, used when switching channels. Providing this ID will cause push notifications to clear on the channel being switched to.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "channel_id"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Channel view successful",
+          "schema": {
+            "$ref": "#/definitions/StatusOK"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "View channel",
+      "tags": [
+        "channels"
+      ]
+    }
+  },
+  "/channels/{channel_id}": {
+    "delete": {
+      "description": "Delete a channel based from provided channel id string.\n##### Permissions\n`delete_public_channel` permission if the channel is public,\n`delete_private_channel` permission if the channel is private,\nor have `manage_system` permission.\n",
+      "parameters": [
+        {
+          "description": "Channel GUID",
+          "in": "path",
+          "name": "channel_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Channel deletion successful",
+          "schema": {
+            "$ref": "#/definitions/StatusOK"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Delete a channel",
+      "tags": [
+        "channels"
+      ]
+    },
+    "get": {
+      "description": "Get channel from the provided channel id string.\n##### Permissions\n`read_channel` permission for the channel.\n",
+      "parameters": [
+        {
+          "description": "Channel GUID",
+          "in": "path",
+          "name": "channel_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Channel retrieval successful",
+          "schema": {
+            "$ref": "#/definitions/Channel"
+          }
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        }
+      },
+      "summary": "Get a channel",
+      "tags": [
+        "channels"
+      ]
+    },
+    "put": {
+      "description": "Update a channel. The fields that can be updated are listed as paramters. Omitted fields will be treated as blanks.\n##### Permissions\nIf updating a public channel, `manage_public_channel_members` permission is required. If updating a private channel, `manage_private_channel_members` permission is required.\n",
+      "parameters": [
+        {
+          "description": "Channel GUID",
+          "in": "path",
+          "name": "channel_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "Channel object to be updated",
+          "in": "body",
+          "name": "body",
+          "required": true,
+          "schema": {
+            "properties": {
+              "display_name": {
+                "description": "The non-unique UI name for the channel",
+                "type": "string"
+              },
+              "header": {
+                "description": "Markdown-formatted text to display in the header of the channel",
+                "type": "string"
+              },
+              "id": {
+                "description": "The channel's id, not updatable",
+                "type": "string"
+              },
+              "name": {
+                "description": "The unique handle for the channel, will be present in the channel URL",
+                "type": "string"
+              },
+              "purpose": {
+                "description": "A short description of the purpose of the channel",
+                "type": "string"
+              },
+              "type": {
+                "description": "'O' for a public channel, 'P' for a private channel",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Channel update successful",
+          "schema": {
+            "$ref": "#/definitions/Channel"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        }
+      },
+      "summary": "Update a channel",
+      "tags": [
+        "channels"
+      ]
+    }
+  },
+  "/channels/{channel_id}/members": {
+    "get": {
+      "description": "Get a page of members for a channel.\n##### Permissions\n`read_channel` permission for the channel.\n",
+      "parameters": [
+        {
+          "description": "Channel GUID",
+          "in": "path",
+          "name": "channel_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Channel members retrieval successful",
+          "schema": {
+            "items": {
+              "$ref": "#/definitions/ChannelMember"
+            },
+            "type": "array"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Get channel members",
+      "tags": [
+        "channels"
+      ]
+    },
+    "post": {
+      "description": "Add a user to the channel.",
+      "parameters": [
+        {
+          "description": "The channel ID",
+          "in": "path",
+          "name": "channel_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "in": "body",
+          "name": "body",
+          "required": true,
+          "schema": {
+            "$ref": "#/definitions/ChannelMember"
+          }
+        }
+      ],
+      "responses": {
+        "201": {
+          "description": "Channel member creation successful",
+          "schema": {
+            "$ref": "#/definitions/ChannelMember"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Add a user",
+      "tags": [
+        "channels"
+      ]
+    }
+  },
+  "/channels/{channel_id}/members/ids": {
+    "post": {
+      "description": "Get a list of channel members based on the provided user ids.\n##### Permissions\nMust have the `read_channel` permission.\n",
+      "parameters": [
+        {
+          "description": "Channel GUID",
+          "in": "path",
+          "name": "channel_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "List of user ids",
+          "in": "body",
+          "name": "user_ids",
+          "required": true,
+          "schema": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Channel member list retrieval successful",
+          "schema": {
+            "items": {
+              "$ref": "#/definitions/ChannelMember"
+            },
+            "type": "array"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        }
+      },
+      "summary": "Get channel members by ids",
+      "tags": [
+        "channels"
+      ]
+    }
+  },
+  "/channels/{channel_id}/members/{user_id}": {
+    "delete": {
+      "description": "Delete a channel member, effectively removing them from a channel.\n##### Permissions\n`manage_public_channel_members` permission if the channel is public.\n`manage_private_channel_members` permission if the channel is private.\n",
+      "parameters": [
+        {
+          "description": "Channel GUID",
+          "in": "path",
+          "name": "channel_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "User GUID",
+          "in": "path",
+          "name": "user_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Channel member deletion successful",
+          "schema": {
+            "$ref": "#/definitions/StatusOK"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Remove user from channel",
+      "tags": [
+        "channels"
+      ]
+    },
+    "get": {
+      "description": "Get a channel member.\n##### Permissions\n`read_channel` permission for the channel.\n",
+      "parameters": [
+        {
+          "description": "Channel GUID",
+          "in": "path",
+          "name": "channel_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "User GUID",
+          "in": "path",
+          "name": "user_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Channel member retrieval successful",
+          "schema": {
+            "$ref": "#/definitions/ChannelMember"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Get channel member",
+      "tags": [
+        "channels"
+      ]
+    }
+  },
+  "/channels/{channel_id}/members/{user_id}/notify_props": {
+    "put": {
+      "description": "Update a user's notification properties for a channel. Only the provided fields are updated.\n##### Permissions\nMust be logged in as the user or have `edit_other_users` permission.\n",
+      "parameters": [
+        {
+          "description": "Channel GUID",
+          "in": "path",
+          "name": "channel_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "User GUID",
+          "in": "path",
+          "name": "user_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "Space-delimited channel roles to assign to the user",
+          "in": "body",
+          "name": "notify_props",
+          "required": true,
+          "schema": {
+            "properties": {
+              "desktop": {
+                "description": "Controls when to send desktop notifications. The possible options are `default`, `all`, `mention`, `none`",
+                "type": "string"
+              },
+              "mark_unread": {
+                "description": "Controls when to mark a channel unread. The possible options are `all` and `mention`",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Channel notification properties update successful",
+          "schema": {
+            "$ref": "#/definitions/StatusOK"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        }
+      },
+      "summary": "Update channel notifications",
+      "tags": [
+        "channels"
+      ]
+    }
+  },
+  "/channels/{channel_id}/members/{user_id}/roles": {
+    "put": {
+      "description": "Update a user's roles for a channel.\n##### Permissions\nMust have `manage_channel_roles` permission for the channel.\n",
+      "parameters": [
+        {
+          "description": "Channel GUID",
+          "in": "path",
+          "name": "channel_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "User GUID",
+          "in": "path",
+          "name": "user_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "Space-delimited channel roles to assign to the user",
+          "in": "body",
+          "name": "roles",
+          "required": true,
+          "schema": {
+            "properties": {
+              "roles": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "roles"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Channel roles update successful",
+          "schema": {
+            "$ref": "#/definitions/StatusOK"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Update channel roles",
+      "tags": [
+        "channels"
+      ]
+    }
+  },
+  "/channels/{channel_id}/patch": {
+    "put": {
+      "description": "Partially update a channel by providing only the fields you want to update. Omitted fields will not be updated. The fields that can be updated are defined in the request body, all other provided fields will be ignored.\n##### Permissions\nIf updating a public channel, `manage_public_channel_members` permission is required. If updating a private channel, `manage_private_channel_members` permission is required.\n",
+      "parameters": [
+        {
+          "description": "Channel GUID",
+          "in": "path",
+          "name": "channel_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "Channel object to be updated",
+          "in": "body",
+          "name": "body",
+          "required": true,
+          "schema": {
+            "properties": {
+              "display_name": {
+                "description": "The non-unique UI name for the channel",
+                "type": "string"
+              },
+              "header": {
+                "description": "Markdown-formatted text to display in the header of the channel",
+                "type": "string"
+              },
+              "name": {
+                "description": "The unique handle for the channel, will be present in the channel URL",
+                "type": "string"
+              },
+              "purpose": {
+                "description": "A short description of the purpose of the channel",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Channel patch successful",
+          "schema": {
+            "$ref": "#/definitions/Channel"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        }
+      },
+      "summary": "Patch a channel",
+      "tags": [
+        "channels"
+      ]
+    }
+  },
+  "/channels/{channel_id}/pinned": {
+    "get": {
+      "description": "Get a list of pinned posts for channel.",
+      "parameters": [
+        {
+          "description": "Channel GUID",
+          "in": "path",
+          "name": "channel_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The list of channel pinned posts",
+          "schema": {
+            "$ref": "#/definitions/PostList"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Get a channel's pinned posts",
+      "tags": [
+        "channels"
+      ]
+    }
+  },
+  "/channels/{channel_id}/stats": {
+    "get": {
+      "description": "Get statistics for a channel.\n##### Permissions\nMust have the `read_channel` permission.\n",
+      "parameters": [
+        {
+          "description": "Channel GUID",
+          "in": "path",
+          "name": "channel_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Channel statistics retrieval successful",
+          "schema": {
+            "$ref": "#/definitions/ChannelStats"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Get channel statistics",
+      "tags": [
+        "channels"
+      ]
+    }
+  },
+  "/teams/name/{team_name}/channels/{channel_name}": {
+    "get": {
+      "description": "Gets a channel from the provided team name and channel name strings.\n##### Permissions\n`read_channel` permission for the channel.\n",
+      "parameters": [
+        {
+          "description": "Team Name",
+          "in": "path",
+          "name": "team_name",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "Channel Name",
+          "in": "path",
+          "name": "channel_name",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Channel retrieval successful",
+          "schema": {
+            "$ref": "#/definitions/Channel"
+          }
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        }
+      },
+      "summary": "Get a channel by name and team name",
+      "tags": [
+        "channels"
+      ]
+    }
+  },
+  "/teams/{team_id}/channels": {
+    "get": {
+      "description": "Get a page of public channels on a team based on query string parameters - page and per_page.\n##### Permissions\nMust be authenticated and have the `list_team_channels` permission.\n",
+      "parameters": [
+        {
+          "description": "Team GUID",
+          "in": "path",
+          "name": "team_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "default": "0",
+          "description": "The page to select.",
+          "in": "query",
+          "name": "page",
+          "type": "string"
+        },
+        {
+          "default": "60",
+          "description": "The number of public channels per page.",
+          "in": "query",
+          "name": "per_page",
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Channels retrieval successful",
+          "schema": {
+            "items": {
+              "$ref": "#/definitions/Channel"
+            },
+            "type": "array"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        }
+      },
+      "summary": "Get public channels",
+      "tags": [
+        "teams"
+      ]
+    }
+  },
+  "/teams/{team_id}/channels/ids": {
+    "post": {
+      "description": "Get a list of public channels on a team by id.\n##### Permissions\n`view_team` for the team the channels are on.\n",
+      "parameters": [
+        {
+          "description": "Team GUID",
+          "in": "path",
+          "name": "team_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "List of channel ids",
+          "in": "body",
+          "name": "body",
+          "required": true,
+          "schema": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Channel list retrieval successful",
+          "schema": {
+            "items": {
+              "$ref": "#/definitions/Channel"
+            },
+            "type": "array"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        }
+      },
+      "summary": "Get a list of channels by ids",
+      "tags": [
+        "channels"
+      ]
+    }
+  },
+  "/teams/{team_id}/channels/search": {
+    "post": {
+      "description": "Search public channels on a team based on the search term provided in the request body.\n##### Permissions\nMust have the `list_team_channels` permission.\n",
+      "parameters": [
+        {
+          "description": "Team GUID",
+          "in": "path",
+          "name": "team_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "Search criteria",
+          "in": "body",
+          "name": "body",
+          "required": true,
+          "schema": {
+            "properties": {
+              "term": {
+                "description": "The search term to match against the name or display name of channels",
+                "type": "string"
+              }
+            },
+            "required": [
+              "term"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "responses": {
+        "201": {
+          "description": "Channels search successful",
+          "schema": {
+            "items": {
+              "$ref": "#/definitions/Channel"
+            },
+            "type": "array"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        }
+      },
+      "summary": "Search channels",
+      "tags": [
+        "teams"
+      ]
+    }
+  },
+  "/teams/{team_id}/channels/{channel_name}": {
+    "get": {
+      "description": "Gets channel from the provided team id and channel name strings.\n##### Permissions\n`read_channel` permission for the channel.\n",
+      "parameters": [
+        {
+          "description": "Team GUID",
+          "in": "path",
+          "name": "team_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "Channel Name",
+          "in": "path",
+          "name": "channel_name",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Channel retrieval successful",
+          "schema": {
+            "$ref": "#/definitions/Channel"
+          }
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        }
+      },
+      "summary": "Get a channel by name",
+      "tags": [
+        "channels"
+      ]
+    }
+  },
+  "/users/{user_id}/channels/{channel_id}/unread": {
+    "get": {
+      "description": "Get the total unread messages and mentions for a channel for a user.\n##### Permissions\nMust be logged in as user and have the `read_channel` permission, or have `edit_other_usrs` permission.\n",
+      "parameters": [
+        {
+          "description": "User GUID",
+          "in": "path",
+          "name": "user_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "Channel GUID",
+          "in": "path",
+          "name": "channel_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Channel unreads retrieval successful",
+          "schema": {
+            "$ref": "#/definitions/ChannelUnread"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        }
+      },
+      "summary": "Get unread messages",
+      "tags": [
+        "channels"
+      ]
+    }
+  },
+  "/users/{user_id}/teams/{team_id}/channels": {
+    "get": {
+      "description": "Get all the channels on a team for a user.\n##### Permissions\nLogged in as the user, or have `edit_other_users` permission, and `view_team` permission for the team.\n",
+      "parameters": [
+        {
+          "description": "User GUID",
+          "in": "path",
+          "name": "user_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "Team GUID",
+          "in": "path",
+          "name": "team_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Channels retrieval successful",
+          "schema": {
+            "items": {
+              "$ref": "#/definitions/Channel"
+            },
+            "type": "array"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        }
+      },
+      "summary": "Get channels for user",
+      "tags": [
+        "channels"
+      ]
+    }
+  },
+  "/users/{user_id}/teams/{team_id}/channels/members": {
+    "get": {
+      "description": "Get all channel members on a team for a user.\n##### Permissions\nLogged in as the user and `view_team` permission for the team. Having `manage_system` permission voids the previous requirements.\n",
+      "parameters": [
+        {
+          "description": "User GUID",
+          "in": "path",
+          "name": "user_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "Team GUID",
+          "in": "path",
+          "name": "team_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Channel members retrieval successful",
+          "schema": {
+            "items": {
+              "$ref": "#/definitions/ChannelMember"
+            },
+            "type": "array"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Get channel members for user",
+      "tags": [
+        "channels"
+      ]
+    }
+  }
+}

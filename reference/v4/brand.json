@@ -1,0 +1,64 @@
+{
+  "/brand/image": {
+    "get": {
+      "description": "Get the previously uploaded brand image.\n##### Permissions\nNo permission required.\n",
+      "responses": {
+        "200": {
+          "description": "Brand image retrieval successful",
+          "schema": {
+            "type": "string"
+          }
+        },
+        "501": {
+          "$ref": "#/responses/NotImplemented"
+        }
+      },
+      "summary": "Get brand image",
+      "tags": [
+        "brand"
+      ]
+    },
+    "post": {
+      "consumes": [
+        "multipart/form-data"
+      ],
+      "description": "Uploads a brand image.\n##### Permissions\nMust have `manage_system` permission.\n",
+      "parameters": [
+        {
+          "description": "The image to be uploaded",
+          "in": "formData",
+          "name": "image",
+          "required": true,
+          "type": "file"
+        }
+      ],
+      "responses": {
+        "201": {
+          "description": "Brand image upload successful",
+          "schema": {
+            "$ref": "#/definitions/StatusOK"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "413": {
+          "$ref": "#/responses/TooLarge"
+        },
+        "501": {
+          "$ref": "#/responses/NotImplemented"
+        }
+      },
+      "summary": "Upload brand image",
+      "tags": [
+        "brand"
+      ]
+    }
+  }
+}

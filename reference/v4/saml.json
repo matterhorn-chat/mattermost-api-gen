@@ -1,0 +1,240 @@
+{
+  "/saml/certificate/idp": {
+    "delete": {
+      "description": "Delete the current IDP certificate being used with your SAML configuration. This will also disable SAML on your system as this certificate is required for SAML.\n##### Permissions\nMust have `manage_system` permission.\n",
+      "responses": {
+        "200": {
+          "description": "SAML certificate delete successful",
+          "schema": {
+            "$ref": "#/definitions/StatusOK"
+          }
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "501": {
+          "$ref": "#/responses/NotImplemented"
+        }
+      },
+      "summary": "Remove IDP certificate",
+      "tags": [
+        "SAML"
+      ]
+    },
+    "post": {
+      "consumes": [
+        "multipart/form-data"
+      ],
+      "description": "Upload the IDP certificate to be used with your SAML configuration. This will also set the filename for the IdpCertificateFile setting in your `config.json`.\n##### Permissions\nMust have `manage_system` permission.\n",
+      "parameters": [
+        {
+          "description": "The IDP certificate file",
+          "in": "formData",
+          "name": "certificate",
+          "required": true,
+          "type": "file"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "SAML certificate upload successful",
+          "schema": {
+            "$ref": "#/definitions/StatusOK"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "501": {
+          "$ref": "#/responses/NotImplemented"
+        }
+      },
+      "summary": "Upload IDP certificate",
+      "tags": [
+        "SAML"
+      ]
+    }
+  },
+  "/saml/certificate/private": {
+    "delete": {
+      "description": "Delete the current private key being used with your SAML configuration. This will also disable encryption for SAML on your system as this key is required for that.\n##### Permissions\nMust have `manage_system` permission.\n",
+      "responses": {
+        "200": {
+          "description": "SAML certificate delete successful",
+          "schema": {
+            "$ref": "#/definitions/StatusOK"
+          }
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "501": {
+          "$ref": "#/responses/NotImplemented"
+        }
+      },
+      "summary": "Remove private key",
+      "tags": [
+        "SAML"
+      ]
+    },
+    "post": {
+      "consumes": [
+        "multipart/form-data"
+      ],
+      "description": "Upload the private key to be used for encryption with your SAML configuration. This will also set the filename for the PrivateKeyFile setting in your `config.json`.\n##### Permissions\nMust have `manage_system` permission.\n",
+      "parameters": [
+        {
+          "description": "The private key file",
+          "in": "formData",
+          "name": "certificate",
+          "required": true,
+          "type": "file"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "SAML certificate upload successful",
+          "schema": {
+            "$ref": "#/definitions/StatusOK"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "501": {
+          "$ref": "#/responses/NotImplemented"
+        }
+      },
+      "summary": "Upload private key",
+      "tags": [
+        "SAML"
+      ]
+    }
+  },
+  "/saml/certificate/public": {
+    "delete": {
+      "description": "Delete the current public certificate being used with your SAML configuration. This will also disable encryption for SAML on your system as this certificate is required for that.\n##### Permissions\nMust have `manage_system` permission.\n",
+      "responses": {
+        "200": {
+          "description": "SAML certificate delete successful",
+          "schema": {
+            "$ref": "#/definitions/StatusOK"
+          }
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "501": {
+          "$ref": "#/responses/NotImplemented"
+        }
+      },
+      "summary": "Remove public certificate",
+      "tags": [
+        "SAML"
+      ]
+    },
+    "post": {
+      "consumes": [
+        "multipart/form-data"
+      ],
+      "description": "Upload the public certificate to be used for encryption with your SAML configuration. This will also set the filename for the PublicCertificateFile setting in your `config.json`.\n##### Permissions\nMust have `manage_system` permission.\n",
+      "parameters": [
+        {
+          "description": "The public certificate file",
+          "in": "formData",
+          "name": "certificate",
+          "required": true,
+          "type": "file"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "SAML certificate upload successful",
+          "schema": {
+            "$ref": "#/definitions/StatusOK"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "501": {
+          "$ref": "#/responses/NotImplemented"
+        }
+      },
+      "summary": "Upload public certificate",
+      "tags": [
+        "SAML"
+      ]
+    }
+  },
+  "/saml/certificate/status": {
+    "get": {
+      "description": "Get the status of the uploaded certificates and keys in use by your SAML configuration.\n##### Permissions\nMust have `manage_system` permission.\n",
+      "responses": {
+        "200": {
+          "description": "SAML certificate status retrieval successful",
+          "schema": {
+            "$ref": "#/definitions/SamlCertificateStatus"
+          }
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "501": {
+          "$ref": "#/responses/NotImplemented"
+        }
+      },
+      "summary": "Get certificate status",
+      "tags": [
+        "SAML"
+      ]
+    }
+  },
+  "/saml/metadata": {
+    "get": {
+      "description": "Get SAML metadata from the server. SAML must be configured properly.\n##### Permissions\nNo permission required.\n",
+      "responses": {
+        "200": {
+          "description": "SAML metadata retrieval successful",
+          "schema": {
+            "type": "string"
+          }
+        },
+        "501": {
+          "$ref": "#/responses/NotImplemented"
+        }
+      },
+      "summary": "Get metadata",
+      "tags": [
+        "SAML"
+      ]
+    }
+  }
+}

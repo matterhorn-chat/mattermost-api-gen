@@ -1,0 +1,3 @@
+[submodule "mattermost-api-reference"]
+	path = mattermost-api-reference
+	url = git@github.com:matterhorn-chat/mattermost-api-reference.git

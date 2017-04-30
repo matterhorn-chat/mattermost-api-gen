@@ -1,0 +1,264 @@
+{
+  "/files": {
+    "post": {
+      "consumes": [
+        "multipart/form-data"
+      ],
+      "description": "Uploads a file that can later be attached to a post.\n##### Permissions\nMust have `upload_file` permission.\n",
+      "parameters": [
+        {
+          "description": "A file to be uploaded",
+          "in": "formData",
+          "name": "files",
+          "required": true,
+          "type": "file"
+        },
+        {
+          "description": "The ID of the channel that this file will be uploaded to",
+          "in": "formData",
+          "name": "channel_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "allowEmptyValue": true,
+          "description": "A unique identifier for the file that will be returned in the response",
+          "in": "formData",
+          "name": "client_ids",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Corresponding lists of the provided client_ids and the metadata that has been stored in the database for each one",
+          "schema": {
+            "properties": {
+              "client_ids": {
+                "description": "A list of the client_ids that were provided in the request",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "file_infos": {
+                "description": "A list of file metadata that has been stored in the database",
+                "items": {
+                  "$ref": "#/definitions/FileInfo"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "413": {
+          "$ref": "#/responses/TooLarge"
+        },
+        "501": {
+          "$ref": "#/responses/NotImplemented"
+        }
+      },
+      "summary": "Upload a file",
+      "tags": [
+        "files"
+      ]
+    }
+  },
+  "/files/{file_id}": {
+    "get": {
+      "description": "Gets a file that has been uploaded previously.\n##### Permissions\nMust have `read_channel` permission or be uploader of the file.\n",
+      "parameters": [
+        {
+          "description": "The ID of the file to get",
+          "in": "path",
+          "name": "file_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        },
+        "501": {
+          "$ref": "#/responses/NotImplemented"
+        }
+      },
+      "summary": "Get a file",
+      "tags": [
+        "files"
+      ]
+    }
+  },
+  "/files/{file_id}/info": {
+    "get": {
+      "description": "Gets a file's info.\n##### Permissions\nMust have `read_channel` permission or be uploader of the file.\n",
+      "parameters": [
+        {
+          "description": "The ID of the file info to get",
+          "in": "path",
+          "name": "file_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "The stored metadata for the given file",
+          "schema": {
+            "$ref": "#/definitions/FileInfo"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        },
+        "501": {
+          "$ref": "#/responses/NotImplemented"
+        }
+      },
+      "summary": "Get metadata for a file",
+      "tags": [
+        "files"
+      ]
+    }
+  },
+  "/files/{file_id}/link": {
+    "get": {
+      "description": "Gets a public link for a file that can be accessed without logging into Mattermost.",
+      "parameters": [
+        {
+          "description": "The ID of the file to get a link for",
+          "in": "path",
+          "name": "file_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "A publicly accessible link to the given file",
+          "schema": {
+            "type": "string"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        },
+        "501": {
+          "$ref": "#/responses/NotImplemented"
+        }
+      },
+      "summary": "Get a public file link",
+      "tags": [
+        "files"
+      ]
+    }
+  },
+  "/files/{file_id}/preview": {
+    "get": {
+      "description": "Gets a file's preview.\n##### Permissions\nMust have `read_channel` permission or be uploader of the file.\n",
+      "parameters": [
+        {
+          "description": "The ID of the file to get",
+          "in": "path",
+          "name": "file_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        },
+        "501": {
+          "$ref": "#/responses/NotImplemented"
+        }
+      },
+      "summary": "Get a file's preview",
+      "tags": [
+        "files"
+      ]
+    }
+  },
+  "/files/{file_id}/thumbnail": {
+    "get": {
+      "description": "Gets a file's thumbnail.\n##### Permissions\nMust have `read_channel` permission or be uploader of the file.\n",
+      "parameters": [
+        {
+          "description": "The ID of the file to get",
+          "in": "path",
+          "name": "file_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        },
+        "501": {
+          "$ref": "#/responses/NotImplemented"
+        }
+      },
+      "summary": "Get a file's thumbnail",
+      "tags": [
+        "files"
+      ]
+    }
+  }
+}

@@ -1,0 +1,98 @@
+{
+  "/users/status/ids": {
+    "get": {
+      "description": "Get a list of user statuses by id from the server.\n##### Permissions\nMust be authenticated.\n",
+      "responses": {
+        "200": {
+          "description": "User statuses retrieval successful",
+          "schema": {
+            "items": {
+              "$ref": "#/definitions/Status"
+            },
+            "type": "array"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        }
+      },
+      "summary": "Get user statuses by id",
+      "tags": [
+        "status"
+      ]
+    }
+  },
+  "/users/{user_id}/status": {
+    "get": {
+      "description": "Get user status by id from the server.\n##### Permissions\nMust be authenticated.\n",
+      "responses": {
+        "200": {
+          "description": "User status retrieval successful",
+          "schema": {
+            "type": "#/definitions/Status"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        }
+      },
+      "summary": "Get user status",
+      "tags": [
+        "status"
+      ]
+    },
+    "put": {
+      "description": "Manually set a user's status. When setting a user's status, the status will remain that value until set \"online\" again, which will return the status to being automatically updated based on user activity.\n##### Permissions\nMust have `edit_other_users` permission for the team.\n",
+      "parameters": [
+        {
+          "description": "User ID",
+          "in": "path",
+          "name": "user_id",
+          "type": "string"
+        },
+        {
+          "description": "Status object that is to be updated",
+          "in": "body",
+          "name": "body",
+          "required": true,
+          "schema": {
+            "properties": {
+              "status": {
+                "description": "User status, can be `online`, `away` and `offline`",
+                "type": "string"
+              }
+            },
+            "required": [
+              "status"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "User status update successful",
+          "schema": {
+            "type": "#/definitions/Status"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        }
+      },
+      "summary": "Update user status",
+      "tags": [
+        "status"
+      ]
+    }
+  }
+}

@@ -1,0 +1,192 @@
+{
+  "/emoji": {
+    "get": {
+      "description": "Get a list of custom emoji for the team.\n##### Permissions\nMust be authenticated.\n",
+      "responses": {
+        "200": {
+          "description": "Emoji list retrieve successful",
+          "schema": {
+            "$ref": "#/definitions/Emoji"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "501": {
+          "$ref": "#/responses/NotImplemented"
+        }
+      },
+      "summary": "Get a list of custom emoji",
+      "tags": [
+        "emoji"
+      ]
+    },
+    "post": {
+      "consumes": [
+        "multipart/form-data"
+      ],
+      "description": "Create a custom emoji for the team.\n##### Permissions\nMust be authenticated.\n",
+      "parameters": [
+        {
+          "description": "A file to be uploaded",
+          "in": "formData",
+          "name": "files",
+          "required": true,
+          "type": "file"
+        },
+        {
+          "description": "The Emoji object",
+          "in": "formData",
+          "name": "emoji",
+          "required": true,
+          "type": "object"
+        }
+      ],
+      "responses": {
+        "201": {
+          "description": "Emoji creation successful",
+          "schema": {
+            "$ref": "#/definitions/Emoji"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "413": {
+          "$ref": "#/responses/TooLarge"
+        },
+        "501": {
+          "$ref": "#/responses/NotImplemented"
+        }
+      },
+      "summary": "Create a custom emoji",
+      "tags": [
+        "emoji"
+      ]
+    }
+  },
+  "/emoji/{emoji_id}": {
+    "delete": {
+      "description": "Delete a custom emoji for the team.\n##### Permissions\nMust have the `manage_team` permission and the user who created the emoji or be Admin user.\n",
+      "parameters": [
+        {
+          "description": "Emoji GUID",
+          "in": "path",
+          "name": "emoji_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Emoji delete successful",
+          "schema": {
+            "$ref": "#/definitions/Emoji"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "501": {
+          "$ref": "#/responses/NotImplemented"
+        }
+      },
+      "summary": "Delete a custom emoji",
+      "tags": [
+        "emoji"
+      ]
+    },
+    "get": {
+      "description": "Get a custom emoji for the team.\n##### Permissions\nMust be authenticated.\n",
+      "parameters": [
+        {
+          "description": "Emoji GUID",
+          "in": "path",
+          "name": "emoji_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Emoji retrieve successful",
+          "schema": {
+            "$ref": "#/definitions/Emoji"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "501": {
+          "$ref": "#/responses/NotImplemented"
+        }
+      },
+      "summary": "Get a custom emoji",
+      "tags": [
+        "emoji"
+      ]
+    }
+  },
+  "/emoji/{emoji_id}/image": {
+    "get": {
+      "description": "Get custom emoji image for the team.\n##### Permissions\nMust be authenticated.\n",
+      "parameters": [
+        {
+          "description": "Emoji GUID",
+          "in": "path",
+          "name": "emoji_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Emoji image retrieve successful"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/responses/NotFound"
+        },
+        "500": {
+          "$ref": "#/responses/InternalServerError"
+        },
+        "501": {
+          "$ref": "#/responses/NotImplemented"
+        }
+      },
+      "summary": "Get custom emoji image",
+      "tags": [
+        "emoji"
+      ]
+    }
+  }
+}

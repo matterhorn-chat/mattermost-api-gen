@@ -1,0 +1,594 @@
+{
+  "/channels/{channel_id}/posts": {
+    "get": {
+      "description": "Get a page of posts in a channel. Use the query parameters to modify the behaviour of this endpoint. The parameters `since`, `before` and `after` must not be used together.\n##### Permissions\nMust have `read_channel` permission for the channel.\n",
+      "parameters": [
+        {
+          "description": "The channel ID to get the posts for",
+          "in": "path",
+          "name": "channel_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "default": "0",
+          "description": "The page to select",
+          "in": "query",
+          "name": "page",
+          "type": "string"
+        },
+        {
+          "default": "60",
+          "description": "The number of posts per page",
+          "in": "query",
+          "name": "per_page",
+          "type": "string"
+        },
+        {
+          "description": "Provide a non-zero value in Unix time milliseconds to select posts created after that time",
+          "in": "query",
+          "name": "since",
+          "type": "integer"
+        },
+        {
+          "description": "A post id to select the posts that came before this one",
+          "in": "query",
+          "name": "before",
+          "type": "string"
+        },
+        {
+          "description": "A post id to select the posts that came after this one",
+          "in": "query",
+          "name": "after",
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Post list retrieval successful",
+          "schema": {
+            "$ref": "#/definitions/PostList"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Get posts for a channel",
+      "tags": [
+        "posts"
+      ]
+    }
+  },
+  "/posts": {
+    "post": {
+      "description": "Create a new post in a channel. To create the post as a comment on another post, provide `root_id`.\n##### Permissions\nMust have `create_post` permission for the channel the post is being created in.\n",
+      "parameters": [
+        {
+          "description": "Post object to create",
+          "in": "body",
+          "name": "post",
+          "required": true,
+          "schema": {
+            "properties": {
+              "channel_id": {
+                "description": "The channel ID to post in",
+                "type": "string"
+              },
+              "file_ids": {
+                "description": "A list of file IDs to associate with the post",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "message": {
+                "description": "The message contents, can be formatted with Markdown",
+                "type": "string"
+              },
+              "root_id": {
+                "description": "The post ID to comment on",
+                "type": "string"
+              }
+            },
+            "required": [
+              "channel_id",
+              "message"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "responses": {
+        "201": {
+          "description": "Post creation successful",
+          "schema": {
+            "$ref": "#/definitions/Post"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Create a post",
+      "tags": [
+        "posts"
+      ]
+    }
+  },
+  "/posts/{post_id}": {
+    "delete": {
+      "description": "Soft deletes a post, by marking the post as deleted in the database. Soft deleted posts will not be returned in post queries.\n##### Permissions\nMust be logged in as the user or have `delete_others_posts` permission.\n",
+      "parameters": [
+        {
+          "description": "ID of the post to delete",
+          "in": "path",
+          "name": "post_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Post deletion successful",
+          "schema": {
+            "$ref": "#/definitions/StatusOK"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Delete a post",
+      "tags": [
+        "posts"
+      ]
+    },
+    "get": {
+      "description": "Get a single post.\n##### Permissions\nMust have `read_channel` permission for the channel the post is in.\n",
+      "parameters": [
+        {
+          "description": "ID of the post to get",
+          "in": "path",
+          "name": "post_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Post retrieval successful",
+          "schema": {
+            "$ref": "#/definitions/Post"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Get a post",
+      "tags": [
+        "posts"
+      ]
+    },
+    "put": {
+      "description": "Update a post. Only the fields listed below are updatable, omitted fields will be treated as blank.\n##### Permissions\nMust have `edit_post` permission for the channel the post is in.\n",
+      "parameters": [
+        {
+          "description": "ID of the post to update",
+          "in": "path",
+          "name": "post_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "Post object that is to be updated",
+          "in": "body",
+          "name": "body",
+          "required": true,
+          "schema": {
+            "properties": {
+              "file_ids": {
+                "description": "The list of files attached to this post",
+                "type": "array"
+              },
+              "has_reactions": {
+                "description": "Set to `true` if the post has reactions to it",
+                "type": "boolean"
+              },
+              "is_pinned": {
+                "description": "Set to `true` to pin the post to the channel it is in",
+                "type": "boolean"
+              },
+              "message": {
+                "description": "The message text of the post",
+                "type": "string"
+              },
+              "props": {
+                "description": "A general JSON property bag to attach to the post",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Post update successful",
+          "schema": {
+            "$ref": "#/definitions/Post"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Update a post",
+      "tags": [
+        "posts"
+      ]
+    }
+  },
+  "/posts/{post_id}/files/info": {
+    "get": {
+      "description": "Gets a list of file information objects for the files attached to a post.\n##### Permissions\nMust have `read_channel` permission for the channel the post is in.\n",
+      "parameters": [
+        {
+          "description": "ID of the post",
+          "in": "path",
+          "name": "post_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "File info retrieval successful",
+          "schema": {
+            "items": {
+              "$ref": "#/definitions/FileInfo"
+            },
+            "type": "array"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Get file info for post",
+      "tags": [
+        "posts"
+      ]
+    }
+  },
+  "/posts/{post_id}/patch": {
+    "put": {
+      "description": "Partially update a post by providing only the fields you want to update. Omitted fields will not be updated. The fields that can be updated are defined in the request body, all other provided fields will be ignored.\n##### Permissions\nMust have the `edit_post` permission.\n",
+      "parameters": [
+        {
+          "description": "Post GUID",
+          "in": "path",
+          "name": "post_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "Post object that is to be updated",
+          "in": "body",
+          "name": "body",
+          "required": true,
+          "schema": {
+            "properties": {
+              "file_ids": {
+                "description": "The list of files attached to this post",
+                "type": "array"
+              },
+              "has_reactions": {
+                "description": "Set to `true` if the post has reactions to it",
+                "type": "boolean"
+              },
+              "is_pinned": {
+                "description": "Set to `true` to pin the post to the channel it is in",
+                "type": "boolean"
+              },
+              "message": {
+                "description": "The message text of the post",
+                "type": "string"
+              },
+              "props": {
+                "description": "A general JSON property bag to attach to the post",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Post patch successful",
+          "schema": {
+            "$ref": "#/definitions/Post"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Patch a post",
+      "tags": [
+        "posts"
+      ]
+    }
+  },
+  "/posts/{post_id}/pin": {
+    "post": {
+      "description": "Pin a post to a channel it is in based from the provided post id string.\n##### Permissions\nMust be authenticated and have the `read_channel` permission to the channel the post is in.\n",
+      "parameters": [
+        {
+          "description": "Post GUID",
+          "in": "path",
+          "name": "post_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Pinned post successful",
+          "schema": {
+            "$ref": "#/definitions/StatusOK"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Pin a post to the channel",
+      "tags": [
+        "posts"
+      ]
+    }
+  },
+  "/posts/{post_id}/thread": {
+    "get": {
+      "description": "Get a post and the rest of the posts in the same thread.\n##### Permissions\nMust have `read_channel` permission for the channel the thread is in.\n",
+      "parameters": [
+        {
+          "description": "ID of a post in the thread",
+          "in": "path",
+          "name": "post_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Post list retrieval successful",
+          "schema": {
+            "$ref": "#/definitions/PostList"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Get a thread",
+      "tags": [
+        "posts"
+      ]
+    }
+  },
+  "/posts/{post_id}/unpin": {
+    "post": {
+      "description": "Unpin a post to a channel it is in based from the provided post id string.\n##### Permissions\nMust be authenticated and have the `read_channel` permission to the channel the post is in.\n",
+      "parameters": [
+        {
+          "description": "Post GUID",
+          "in": "path",
+          "name": "post_id",
+          "required": true,
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Unpinned post successful",
+          "schema": {
+            "$ref": "#/definitions/StatusOK"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Unpin a post to the channel",
+      "tags": [
+        "posts"
+      ]
+    }
+  },
+  "/team/{team_id}/posts/search": {
+    "post": {
+      "description": "Search posts in the team and from the provided terms string.\n##### Permissions\nMust be authenticated and have the `view_team` permission.\n",
+      "parameters": [
+        {
+          "description": "Team GUID",
+          "in": "path",
+          "name": "team_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "The search terms and logic to use in the search.",
+          "in": "body",
+          "name": "body",
+          "required": true,
+          "schema": {
+            "properties": {
+              "is_or_search": {
+                "description": "Set to true if an Or search should be performed vs an And search.",
+                "type": "boolean"
+              },
+              "terms": {
+                "description": "The search terms as inputed by the user.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "terms",
+              "is_or_search"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Post list retrieval successful",
+          "schema": {
+            "$ref": "#/definitions/PostList"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Search for team posts",
+      "tags": [
+        "posts"
+      ]
+    }
+  },
+  "/users/{user_id}/posts/flagged": {
+    "get": {
+      "description": "Get a page of flagged posts of a user provided user id string. Selects from a channel, team or all flagged posts by a user.\n##### Permissions\nMust be user or have `manage_system` permission.\n",
+      "parameters": [
+        {
+          "description": "ID of the user",
+          "in": "path",
+          "name": "user_id",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "description": "Team ID",
+          "in": "query",
+          "name": "team_id",
+          "type": "string"
+        },
+        {
+          "description": "Channel ID",
+          "in": "query",
+          "name": "channel_id",
+          "type": "string"
+        },
+        {
+          "default": "0",
+          "description": "The page to select",
+          "in": "query",
+          "name": "page",
+          "type": "string"
+        },
+        {
+          "default": "60",
+          "description": "The number of posts per page",
+          "in": "query",
+          "name": "per_page",
+          "type": "string"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Post list retrieval successful",
+          "schema": {
+            "items": {
+              "$ref": "#/definitions/PostList"
+            },
+            "type": "array"
+          }
+        },
+        "400": {
+          "$ref": "#/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/responses/Forbidden"
+        }
+      },
+      "summary": "Get a list of flagged posts",
+      "tags": [
+        "posts"
+      ]
+    }
+  }
+}

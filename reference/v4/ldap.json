@@ -1,0 +1,45 @@
+{
+  "/ldap/sync": {
+    "post": {
+      "description": "Synchronize any user attribute changes in the configured AD/LDAP server with Mattermost.\n##### Permissions\nMust have `manage_system` permission.\n",
+      "responses": {
+        "200": {
+          "description": "LDAP sync successful",
+          "schema": {
+            "$ref": "#/definitions/StatusOK"
+          }
+        },
+        "501": {
+          "$ref": "#/responses/NotImplemented"
+        }
+      },
+      "summary": "Sync with LDAP",
+      "tags": [
+        "LDAP"
+      ]
+    }
+  },
+  "/ldap/test": {
+    "post": {
+      "description": "Test the current AD/LDAP configuration to see if the AD/LDAP server can be contacted successfully.\n##### Permissions\nMust have `manage_system` permission.\n",
+      "responses": {
+        "200": {
+          "description": "LDAP test successful",
+          "schema": {
+            "$ref": "#/definitions/StatusOK"
+          }
+        },
+        "500": {
+          "$ref": "#/responses/InternalServerError"
+        },
+        "501": {
+          "$ref": "#/responses/NotImplemented"
+        }
+      },
+      "summary": "Test LDAP configuration",
+      "tags": [
+        "LDAP"
+      ]
+    }
+  }
+}
